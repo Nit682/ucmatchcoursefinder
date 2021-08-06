@@ -6,6 +6,7 @@ from pywebio.output import *
 import argparse
 from pywebio import start_server
 import sys
+import ssl
 from bs4 import BeautifulSoup
 from urllib.request import Request, urlopen
 
@@ -15,6 +16,20 @@ app = Flask(__name__)
 d=256
 
 def getMatches(db,course,maximumNumberOfResults):
+    
+    #ssl error handler
+    
+    try:
+        _create_unverified_https_context = ssl._create_unverified_context
+    except AttributeError:
+    # Legacy Python that doesn't verify HTTPS certificates by default
+        pass
+    else:
+    # Handle target environment that doesn't support HTTPS verification
+        ssl._create_default_https_context = _create_unverified_https_context
+        
+        
+    
     if maximumNumberOfResults == 0:
         maximumNumberOfResults = sys.maxsize
     commonCourseWords = ['OF','THE','A','INTRODUCTION','INTRO','FUNDAMENTALS','IN','EVERY']
