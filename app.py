@@ -20,15 +20,13 @@ def getMatches(db,course,maximumNumberOfResults):
     try:
         _create_unverified_https_context = ssl._create_unverified_context
     except AttributeError:
-        # Legacy Python that doesn't verify HTTPS certificates by default
         pass
     else:
-        # Handle target environment that doesn't support HTTPS verification
         ssl._create_default_https_context = _create_unverified_https_context
 
     if maximumNumberOfResults == 0:
         maximumNumberOfResults = sys.maxsize
-    commonCourseWords = ['OF','THE','A','INTRODUCTION','INTRO','FUNDAMENTALS','IN','EVERY']
+    commonCourseWords = ['OF','THE','A','INTRODUCTION','INTRO','FUNDAMENTALS','IN','EVERY','AND','TO']
     if course in commonCourseWords:
         return []
     generalMatchCount = 0
@@ -57,6 +55,7 @@ def getMatches(db,course,maximumNumberOfResults):
                     break
             else:
                 words = course_without_ap.split()
+                occurences = 0
                 flag = False
                 for word in words:
                     if word in commonCourseWords:
@@ -64,8 +63,10 @@ def getMatches(db,course,maximumNumberOfResults):
                     #if webtext.find(word) != -1:
                     #if containsSubstr(webtext,word):
                     if search(word,webtext,101):
-                        flag = True
-                        break
+                        occurences += 1
+                        if occurences >= len(words) / 2:
+                            flag = True
+                            break
                 if flag:
                     generalMatches[school] = url
                     generalMatchCount += 1
@@ -91,43 +92,36 @@ def search(pat, txt, q):
     N = len(txt)
     i = 0
     j = 0
-    p = 0    # hash value for pattern
-    t = 0    # hash value for txt
+    p = 0    
+    t = 0    
     h = 1
  
-    # The value of h would be "pow(d, M-1)%q"
+
     for i in range(M-1):
         h = (h*d)%q
  
-    # Calculate the hash value of pattern and first window
-    # of text
+
     for i in range(M):
         p = (d*p + ord(pat[i]))%q
         t = (d*t + ord(txt[i]))%q
  
-    # Slide the pattern over text one by one
+
     for i in range(N-M+1):
-        # Check the hash values of current window of text and
-        # pattern if the hash values match then only check
-        # for characters on by one
+
         if p==t:
-            # Check for characters one by one
+ 
             for j in range(M):
                 if txt[i+j] != pat[j]:
                     break
                 else: j+=1
  
-            # if p == t and pat[0...M-1] = txt[i, i+1, ...i+M-1]
+
             if j==M:
                 return True
- 
-        # Calculate hash value for next window of text: Remove
-        # leading digit, add trailing digit
+
         if i < N-M:
             t = (d*(t-ord(txt[i])*h) + ord(txt[i+M]))%q
  
-            # We might get negative values of t, converting it to
-            # positive
             if t < 0:
                 t = t+q
     return False
@@ -144,8 +138,13 @@ def run():
     preferredNumberOfMatches = int(numberOfMatches)
     clear()
     put_markdown('# ***UC Match: High School Course Search***')
+    put_text(' ')
+    put_text(' ')
+    put_text(' ')
+    put_text('                                                                                          ',sep='',inline=True,scope=-1,position=-1)
     put_loading()
-    put_text('    This might take a while...',sep='',inline=True,scope=-1,position=-1)
+    put_text(' ')
+    put_text('                                                                            This might take a while...',sep='',inline=True,scope=-1,position=-1)
 
     
     db = dict()
@@ -179,18 +178,9 @@ def run():
         for key,value in matches.items():
             put_text(key+' ('+value+')')
 
-#app.add_url_rule('/tool', 'webio_view', webio_view(run),methods=['GET', 'POST', 'OPTIONS'])
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", "--port", type=int, default=8080)
     args = parser.parse_args()
 
     start_server(run, port=args.port)
-#if __name__ == '__main__':
-    #predict()
-
-#app.run(host='localhost', port=80)
-
-#visit http://localhost/tool to open the PyWebIO application.
