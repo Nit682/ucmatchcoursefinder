@@ -16,20 +16,16 @@ app = Flask(__name__)
 d=256
 
 def getMatches(db,course,maximumNumberOfResults):
-    
-    #ssl error handler
-    
+
     try:
         _create_unverified_https_context = ssl._create_unverified_context
     except AttributeError:
-    # Legacy Python that doesn't verify HTTPS certificates by default
+        # Legacy Python that doesn't verify HTTPS certificates by default
         pass
     else:
-    # Handle target environment that doesn't support HTTPS verification
+        # Handle target environment that doesn't support HTTPS verification
         ssl._create_default_https_context = _create_unverified_https_context
-        
-        
-    
+
     if maximumNumberOfResults == 0:
         maximumNumberOfResults = sys.maxsize
     commonCourseWords = ['OF','THE','A','INTRODUCTION','INTRO','FUNDAMENTALS','IN','EVERY']
@@ -148,7 +144,8 @@ def run():
     preferredNumberOfMatches = int(numberOfMatches)
     clear()
     put_markdown('# ***UC Match: High School Course Search***')
-    put_text('This might take a while...')
+    put_loading()
+    put_text('    This might take a while...',sep='',inline=True,scope=-1,position=-1)
 
     
     db = dict()
