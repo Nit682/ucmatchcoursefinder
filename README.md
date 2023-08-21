@@ -1,3 +1,3 @@
 # ucmatchcoursefinder
 
-Here is the source code for the PyWebIO application that allows high school students to search for extra-cirricular courses offered at summer programs/schools.
+Here is the source code for a PyWebIO application that is a feature part of a larger Android app MyUC. This feature allows high school students to explore educational opportunities unavailable at their schools and search for extra-curricular courses offered at 3rd-party summer programs/schools.
